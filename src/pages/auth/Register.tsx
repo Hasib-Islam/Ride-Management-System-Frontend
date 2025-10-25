@@ -61,7 +61,6 @@ export default function Register() {
   const onSubmit = async (values: RegisterFormValues) => {
     try {
       const response = await register(values).unwrap();
-      console.log('Full API response:', response);
 
       if (response.success) {
         const token =

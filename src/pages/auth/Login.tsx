@@ -48,38 +48,43 @@ export default function Login() {
   const onSubmit = async (values: LoginFormValues) => {
     try {
       const response = await login(values).unwrap();
-      console.log('Full API response:', response);
 
       if (response.success) {
-        const token =
-          response.data?.tokens?.accessToken || response.data?.token;
+        if (response.data.user) {
+          dispatch(
+            setCredentials({
+              user: response.data.user,
+              token: 'cookie-based',
+            })
+          );
+          toast.success('Logged in successfully');
 
-        if (response.data.user && token && token !== 'undefined') {
-          dispatch(
-            setCredentials({
-              user: response.data.user,
-              token: token,
-            })
-          );
-          toast.success('Logged in successfully');
-          navigate('/');
+          const redirectPath = getDashboardPath(response.data.user.role);
+          navigate(redirectPath);
         } else {
-          dispatch(
-            setCredentials({
-              user: response.data.user,
-              token: 'cookie-auth',
-            })
-          );
-          toast.success('Logged in successfully');
-          navigate('/');
+          toast.error('Authentication failed - no user data received');
         }
       } else {
         toast.error(response.message || 'Authentication failed');
       }
     } catch (error: unknown) {
+      console.error('Login error:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Authentication failed';
       toast.error(errorMessage);
+    }
+  };
+
+  const getDashboardPath = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return '/dashboard/admin';
+      case 'driver':
+        return '/dashboard/driver';
+      case 'rider':
+        return '/dashboard/rider';
+      default:
+        return '/';
     }
   };
 

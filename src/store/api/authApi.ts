@@ -9,8 +9,6 @@ export const authApi = apiSlice.injectEndpoints({
         body: credentials,
       }),
       transformResponse: (response: any, meta: any) => {
-        console.log('Login API response:', response);
-        console.log('Login API meta:', meta);
         return response;
       },
     }),
@@ -21,7 +19,6 @@ export const authApi = apiSlice.injectEndpoints({
         body: userData,
       }),
       transformResponse: (response: any) => {
-        console.log('Register API response:', response);
         return response;
       },
     }),
@@ -32,10 +29,9 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
     getProfile: builder.query({
-      query: () => '/auth/profile',
+      query: () => '/user/profile',
       providesTags: ['User'],
       transformResponse: (response: any) => {
-        console.log('Profile response:', response);
         return response;
       },
     }),

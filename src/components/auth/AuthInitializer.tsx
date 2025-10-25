@@ -1,37 +1,28 @@
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch } from '@/store/hooks';
 import { useGetProfileQuery } from '@/store/api/authApi';
 import { setUser, initializeAuth } from '@/store/slices/authSlice';
 
 export default function AuthInitializer() {
   const dispatch = useAppDispatch();
-  const { token, isInitialized } = useAppSelector((state) => state.auth);
 
-  const hasValidToken =
-    token && token !== 'undefined' && token !== 'cookie-based';
-
-  const { data: profileResponse, error } = useGetProfileQuery(undefined, {
-    skip: !hasValidToken || isInitialized,
-  });
-
-  console.log('AuthInitializer:', {
-    token,
-    isInitialized,
-    hasValidToken,
-    profileResponse,
+  const {
+    data: profileResponse,
     error,
-  });
+    isLoading,
+    isSuccess,
+    isError,
+  } = useGetProfileQuery(undefined);
 
   useEffect(() => {
-    console.log('AuthInitializer effect running');
-    if (hasValidToken && profileResponse?.success && profileResponse.data) {
-      console.log('Setting user from profile:', profileResponse.data);
+    if (isSuccess && profileResponse?.success && profileResponse.data) {
       dispatch(setUser(profileResponse.data));
-    } else if (!hasValidToken || error) {
-      console.log('No valid token or error, initializing auth');
+    } else if (isError) {
+      dispatch(initializeAuth());
+    } else if (!isLoading && !isSuccess) {
       dispatch(initializeAuth());
     }
-  }, [hasValidToken, profileResponse, error, dispatch]);
+  }, [profileResponse, error, isLoading, isSuccess, isError, dispatch]);
 
   return null;
 }

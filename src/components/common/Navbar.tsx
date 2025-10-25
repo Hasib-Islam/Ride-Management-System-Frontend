@@ -38,15 +38,7 @@ export default function Navbar() {
   const location = useLocation();
   const [logoutApi] = useLogoutMutation();
 
-  useEffect(() => {
-    console.log('Navbar auth state:', {
-      user,
-      isAuthenticated,
-      isInitialized,
-      hasRole: !!user?.role,
-      role: user?.role,
-    });
-  }, [user, isAuthenticated, isInitialized]);
+  useEffect(() => {}, [user, isAuthenticated, isInitialized]);
 
   const handleLogout = async () => {
     try {
